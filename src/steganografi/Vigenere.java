@@ -90,8 +90,8 @@ public class Vigenere {
             x[i] = printChar((aKey[i] + aPlain[i])%256); 
         }
         enkrip = String.valueOf(x);
-        System.out.println(enkrip);
-        System.out.println(Dekrip(enkrip, key));
+        System.out.println("Hasil Enkripsi \n"+enkrip);
+//        System.out.println(Dekrip(enkrip, key));
         return enkrip;
     }
     

@@ -28,8 +28,8 @@ public class Steganografi {
 	String file_name = image_path(path,original,ext1);
 	BufferedImage image_orig = getImage(file_name);		
 	BufferedImage image = user_space(image_orig);
-	image = add_text(image,message);		
-	return(setImage(image,new File(image_path(path,stegan,"png")),"png"));
+	image = add_text(image,message);
+        return(setImage(image,new File(image_path(path,stegan,"png")),"png"));
     }
     
     /* EXTRACT  */

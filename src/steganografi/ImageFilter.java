@@ -34,7 +34,7 @@ public class ImageFilter extends javax.swing.filechooser.FileFilter{
             return "Supported Image Files";
 	}
 	
-	protected static String getExtension(File f){
+	public static String getExtension(File f){
             String s = f.getName();
             int i = s.lastIndexOf('.');
             if (i > 0 &&  i < s.length() - 1) 

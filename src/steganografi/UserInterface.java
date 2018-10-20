@@ -8,20 +8,35 @@
  *
  * @author duhduh
  */
+import java.io.BufferedReader;
 import javax.swing.JFileChooser;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import steganografi.ImageFilter;
+import steganografi.Vigenere;
+import steganografi.Steganografi;
 import sun.net.www.content.image.png;
  
  
 public class UserInterface extends javax.swing.JFrame {
-
+   Steganografi model;
+    String pesan = "";
+    File dirGambarKom;
     /**
      * Creates new form UserInterface
      */
     public UserInterface() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -48,6 +63,9 @@ public class UserInterface extends javax.swing.JFrame {
         btnGambarBrowse = new javax.swing.JButton();
         btnTeksBrowse = new javax.swing.JButton();
         btnKompres = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        spImageKompres = new javax.swing.JScrollPane();
+        lblImageKompres = new javax.swing.JLabel();
         pnlEkstrak = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         lblGambar1 = new javax.swing.JLabel();
@@ -57,7 +75,7 @@ public class UserInterface extends javax.swing.JFrame {
         btnGambarBrowseEkstrak = new javax.swing.JButton();
         btnEkstrak = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        spImageEkstrak = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,6 +136,18 @@ public class UserInterface extends javax.swing.JFrame {
         });
 
         btnTeksBrowse.setText("pilih");
+        btnTeksBrowse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTeksBrowseActionPerformed(evt);
+            }
+        });
+
+        btnKompres.setText("Kompres");
+        btnKompres.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKompresActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -130,39 +160,54 @@ public class UserInterface extends javax.swing.JFrame {
                     .addComponent(lblTeks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblKunci, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(txtTeks, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(btnTeksBrowse, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(txtGambar, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(btnGambarBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(txtTeks, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnTeksBrowse, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(txtKunci, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(txtGambar, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnGambarBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(110, Short.MAX_VALUE))
+                        .addComponent(txtKunci, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnKompres, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblGambar, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtGambar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnGambarBrowse))
-                .addGap(18, 18, 18)
+                .addGap(10, 10, 10)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTeks, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTeks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnTeksBrowse))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(10, 10, 10)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblKunci, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtKunci, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(69, Short.MAX_VALUE))
+                    .addComponent(txtKunci, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnKompres)))
         );
 
-        btnKompres.setText("Kompres");
+        spImageKompres.setViewportView(lblImageKompres);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(spImageKompres)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(spImageKompres, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout pnlKompresLayout = new javax.swing.GroupLayout(pnlKompres);
         pnlKompres.setLayout(pnlKompresLayout);
@@ -170,21 +215,18 @@ public class UserInterface extends javax.swing.JFrame {
             pnlKompresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlKompresLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pnlKompresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(pnlKompresLayout.createSequentialGroup()
-                .addGap(232, 232, 232)
-                .addComponent(btnKompres, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlKompresLayout.setVerticalGroup(
             pnlKompresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlKompresLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnKompres)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         tabMenu.addTab("Kompres", pnlKompres);
@@ -263,11 +305,11 @@ public class UserInterface extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(spImageEkstrak)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
+            .addComponent(spImageEkstrak, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout pnlEkstrakLayout = new javax.swing.GroupLayout(pnlEkstrak);
@@ -284,7 +326,7 @@ public class UserInterface extends javax.swing.JFrame {
         pnlEkstrakLayout.setVerticalGroup(
             pnlEkstrakLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlEkstrakLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(11, 11, 11)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -321,9 +363,7 @@ public class UserInterface extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(pnlBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 29, Short.MAX_VALUE))
+            .addComponent(pnlBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -334,16 +374,14 @@ public class UserInterface extends javax.swing.JFrame {
         JFileChooser jfc = new JFileChooser();
         jfc.showOpenDialog(null);
         try{
-           jfc.setFileFilter(new Image_Filter());
-            File file = jfc.getSelectedFile();
+           jfc.setFileFilter(new ImageFilter());
+           File file = jfc.getSelectedFile();
+           dirGambarKom = file;
            String dir = file.getAbsolutePath(); 
            txtGambar.setText(dir);
         }catch(Exception E){
-           JOptionPane.showMessageDialog(null, "Pilih file gambar (.bmp atau .png)");
-        }
-        
-
-        
+           JOptionPane.showMessageDialog(null, "Silahkan Pilih file gambar");
+        }            
     }//GEN-LAST:event_btnGambarBrowseActionPerformed
 
     private void txtKunciActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtKunciActionPerformed
@@ -368,12 +406,90 @@ public class UserInterface extends javax.swing.JFrame {
 
     private void btnGambarBrowseEkstrakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGambarBrowseEkstrakActionPerformed
         // TODO add your handling code here:
+        JFileChooser jfc = new JFileChooser();
+        jfc.showOpenDialog(null);
+        try{
+           jfc.setFileFilter(new ImageFilter());
+           File file = jfc.getSelectedFile();
+           String dir = file.getAbsolutePath(); 
+           txtGambar.setText(dir);
+        }catch(Exception E){
+           JOptionPane.showMessageDialog(null, "Silahkan Pilih file gambar");
+        }
     }//GEN-LAST:event_btnGambarBrowseEkstrakActionPerformed
 
     private void btnEkstrakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEkstrakActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnEkstrakActionPerformed
 
+    private void btnTeksBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTeksBrowseActionPerformed
+        // TODO add your handling code here:
+        String dir1 = null;
+        JFileChooser jfc = new JFileChooser();
+        jfc.showOpenDialog(null);
+        try{
+           jfc.addChoosableFileFilter(new FileNameExtensionFilter("text file", "txt"));
+           File file = jfc.getSelectedFile();
+           String dir = file.getAbsolutePath();
+           dir1=dir;
+           txtTeks.setText(dir);
+        }catch(Exception E){
+           JOptionPane.showMessageDialog(null, "Pilih file text");
+        }
+        File file = new File(dir1);
+        BufferedReader br = null; 
+        try {
+            br = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        String st; 
+        try {
+            while ((st = br.readLine()) != null){
+                pesan += st+"\n";
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Plainteks :\n " + pesan );
+    }//GEN-LAST:event_btnTeksBrowseActionPerformed
+
+    
+    private void btnKompresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKompresActionPerformed
+        // TODO add your handling code here:
+        new Vigenere().Enkrip(pesan, txtKunci.getText());
+	File directory = dirGambarKom;
+        try{
+                model = new Steganografi();
+                String text = pesan;
+                String ext  = ImageFilter.getExtension(directory);
+        	String name = directory.getName();
+		String path = directory.getPath();
+		path = path.substring(0,path.length()-name.length()-1);
+                                    
+		name = name.substring(0, name.length()-4);
+		String stegan = JOptionPane.showInputDialog(null,
+    			"Masukkan nama file Ekstrak:", "File name",
+			JOptionPane.PLAIN_MESSAGE);
+		if(model.encode(path,name,ext,stegan,text)){
+        		JOptionPane.showMessageDialog(null, "Proses Kompres pesan berhasil!", 
+					"Success!", JOptionPane.INFORMATION_MESSAGE);
+		}else{
+                    JOptionPane.showMessageDialog(null, "Gambar tidak dapat dikompres!", 
+					"Error!", JOptionPane.INFORMATION_MESSAGE);
+		}
+		//display the new image
+		lblImageKompres.setIcon(new ImageIcon(ImageIO.read(new File(path + "/" + stegan + ".png"))));
+	}catch(Exception except) {
+		//Pesan Jika proses gagal
+		JOptionPane.showMessageDialog(null, "File tidak dapat dibuka!", 
+                    	"Error!", JOptionPane.INFORMATION_MESSAGE);
+		}        
+    }//GEN-LAST:event_btnKompresActionPerformed
+    
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -416,12 +532,13 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JButton btnKompres;
     private javax.swing.JButton btnTeksBrowse;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblGambar;
     private javax.swing.JLabel lblGambar1;
     private javax.swing.JLabel lblHeader;
+    private javax.swing.JLabel lblImageKompres;
     private javax.swing.JLabel lblKunci;
     private javax.swing.JLabel lblKunci1;
     private javax.swing.JLabel lblTeks;
@@ -429,6 +546,8 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JPanel pnlEkstrak;
     private javax.swing.JPanel pnlHeader;
     private javax.swing.JPanel pnlKompres;
+    private javax.swing.JScrollPane spImageEkstrak;
+    private javax.swing.JScrollPane spImageKompres;
     private javax.swing.JTabbedPane tabMenu;
     private javax.swing.JTextField txtGambar;
     private javax.swing.JTextField txtGambarEkstrak;
