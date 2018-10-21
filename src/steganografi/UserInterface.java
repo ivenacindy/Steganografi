@@ -508,24 +508,24 @@ public class UserInterface extends javax.swing.JFrame {
         if(txtTeks.getText().equals("")){
             
         }else{
-            File file ;
-            BufferedReader br = null; 
-            try {
-                file = new File(dir1);
-                br = new BufferedReader(new FileReader(file));
-            } catch (FileNotFoundException ex) {
-                System.out.println("Gagal!!!");
-            }
+        File file ;
+        BufferedReader br = null; 
+        try {
+            file = new File(dir1);
+            br = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException ex) {
+            System.out.println("Gagal!!!");
+        }
 
-            String st; 
-            try {
-                while ((st = br.readLine()) != null){
-                    pesan += st+"\n";
-                }
-            } catch (IOException ex) {
-                System.out.println("Gagal!!!");
+        String st; 
+        try {
+            while ((st = br.readLine()) != null){
+                pesan += st+"\n";
             }
-            System.out.println("Plainteks :\n " + pesan );
+        } catch (IOException ex) {
+            System.out.println("Gagal!!!");
+        }
+        System.out.println("Plainteks :\n " + pesan );
         }
     }//GEN-LAST:event_btnTeksBrowseActionPerformed
 
