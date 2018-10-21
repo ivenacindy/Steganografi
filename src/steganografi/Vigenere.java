@@ -113,8 +113,8 @@ public class Vigenere {
         for (int i = 0; i < aPlain.length; i++) {
 //            System.out.println(aPlain[i]);
             x[i] = printChar((aPlain[i]-aKey[i] )%256);
-            
-            if( ((aPlain[i]-aKey[i] )%256)!= 9 ){
+            System.out.println((aPlain[9]-aKey[9] )%256);
+            if( ((aPlain[i]-aKey[i] )%256)!= 10 ){
                 bw.write(x[i]);
             }else{
                 bw.newLine();
