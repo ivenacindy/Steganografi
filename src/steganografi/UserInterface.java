@@ -461,7 +461,7 @@ public class UserInterface extends javax.swing.JFrame {
 
     private void btnEkstrakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEkstrakActionPerformed
         // TODO add your handling code here:
-        if (txtGambarEkstrak.equals("")){
+        if (txtGambarEkstrak.getText().equals("")){
             JOptionPane.showMessageDialog(null, "Pilih Gambar terlebih dahulu!!!");
         }else{
             model = new Steganografi();
@@ -532,9 +532,10 @@ public class UserInterface extends javax.swing.JFrame {
     
     private void btnKompresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKompresActionPerformed
         // TODO add your handling code here:
-        if (txtGambar.equals("")){
-            System.out.println("anu");
+        if (txtGambar.getText().equals("")){
             JOptionPane.showMessageDialog(this, "Pilih Gambar terlebih dahulu!!!");
+        }else if(txtTeks.getText().equals("")){
+            JOptionPane.showMessageDialog(this, "Pilih Teks Pesan terlebih dahulu!!!");
         }else{
             if(txtKunci.getText().equals("")){
                 //do Nothing
@@ -562,6 +563,9 @@ public class UserInterface extends javax.swing.JFrame {
                     }
                     //display the new image
                     lblImageKompres.setIcon(new ImageIcon(ImageIO.read(new File(path + "/" + stegan + ".png"))));
+                    txtGambar.setText("");
+                    txtTeks.setText("");
+                    txtKunci.setText("");
             }catch(Exception except) {
                     //Pesan Jika proses gagal
                     JOptionPane.showMessageDialog(null, "File tidak dapat dibuka!", 
