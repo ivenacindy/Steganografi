@@ -36,6 +36,7 @@ public class UserInterface extends javax.swing.JFrame {
     File dirGambarKom;
     String sPath= "";
     String sName ="";
+    Vigenere vig;
     /**
      * Creates new form UserInterface
      */
@@ -44,6 +45,7 @@ public class UserInterface extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         txtGambar.setText("");
         txtTeks.setText("");
+        vig = new Vigenere();
     }
 
     /**
@@ -237,7 +239,7 @@ public class UserInterface extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        tabMenu.addTab("Kompres", pnlKompres);
+        tabMenu.addTab("Sisip", pnlKompres);
 
         jPanel4.setBackground(new java.awt.Color(166, 171, 190));
 
@@ -400,7 +402,7 @@ public class UserInterface extends javax.swing.JFrame {
 
     private void btnGambarBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGambarBrowseActionPerformed
         // TODO add your handling code here:
-        JFileChooser jfc = new JFileChooser();
+        JFileChooser jfc = new JFileChooser("./");
         jfc.showOpenDialog(null);
         try{
            jfc.setFileFilter(new ImageFilter());
@@ -435,7 +437,7 @@ public class UserInterface extends javax.swing.JFrame {
 
     private void btnGambarBrowseEkstrakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGambarBrowseEkstrakActionPerformed
         // TODO add your handling code here:
-        JFileChooser jfc = new JFileChooser();
+        JFileChooser jfc = new JFileChooser("./");
         jfc.showOpenDialog(null);
         File file= null;
         try{
@@ -466,38 +468,38 @@ public class UserInterface extends javax.swing.JFrame {
         }else{
             model = new Steganografi();
             String cipher = model.decode(sPath, sName);
+            //di sini masih bug
             if(cipher != ""){
                 System.out.println("ciphertext :\n" + cipher);
-                JOptionPane.showMessageDialog(null, "Ekstrak Pesan Berhasil", "Success",
+                JOptionPane.showMessageDialog(null, "Ekstrak Pesan Berhasil!\n"
+                        + "Pesan di simpan pada " + sPath + "\\" + txtFileNama.getText() + ".txt", "Success",
                         JOptionPane.INFORMATION_MESSAGE);
             }
             String key = txtKunciEkstrak.getText();
-            String psn;
+            String psn=null;
             if(key.equals("")){
                 psn = cipher;
             }else{
-                psn = new Vigenere().Dekrip(cipher, key);
+                String file = sPath + "/"+txtFileNama.getText()+".txt";
+                vig.setPath(file);
+                try {
+//                    vig.Dekrip(cipher, key);
+                psn = vig.Dekrip(cipher, key);
+                } catch (IOException ex) {
+                    System.out.println("Gagal");
+                }
             }
             System.out.println("plain \n" + psn);
-            try{
-                String file = sPath + "/"+txtFileNama.getText()+".txt";
-                FileWriter fw = new FileWriter(file);
-                BufferedWriter bw = new BufferedWriter(fw);
-                bw.write(psn);
-                bw.close();
-            } catch (IOException ex) {
-                System.out.println("gagal!!");
-           }
         }
     }//GEN-LAST:event_btnEkstrakActionPerformed
 
     private void btnTeksBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTeksBrowseActionPerformed
         // TODO add your handling code here:
         String dir1 = null;
-        JFileChooser jfc = new JFileChooser();
+        JFileChooser jfc = new JFileChooser("./");
         jfc.showOpenDialog(null);
         try{
-           jfc.addChoosableFileFilter(new FileNameExtensionFilter("text file", "txt"));
+           jfc.addChoosableFileFilter(new FileNameExtensionFilter("text file", ".txt"));
            File file = jfc.getSelectedFile();
            String dir = file.getAbsolutePath();
            dir1=dir;
@@ -543,34 +545,37 @@ public class UserInterface extends javax.swing.JFrame {
                 pesan = new Vigenere().Enkrip(pesan, txtKunci.getText());
             File directory = dirGambarKom;
             try{
-                    model = new Steganografi();
-                    String text = pesan;
-                    String ext  = ImageFilter.getExtension(directory);
-                    String name = directory.getName();
-                    String path = directory.getPath();
-                    path = path.substring(0,path.length()-name.length()-1);
+                model = new Steganografi();
+                String text = pesan;
+                String ext  = ImageFilter.getExtension(directory);
+                String name = directory.getName();
+                String path = directory.getPath();
+                path = path.substring(0,path.length()-name.length()-1);
 
-                    name = name.substring(0, name.length()-4);
-                    String stegan = JOptionPane.showInputDialog(null,
-                            "Masukkan nama file Ekstrak:", "File name",
-                            JOptionPane.PLAIN_MESSAGE);
+                name = name.substring(0, name.length()-4);
+                String stegan = JOptionPane.showInputDialog(null,
+                        "Masukkan nama file image yang disisipkan :", "File name",
+                        JOptionPane.PLAIN_MESSAGE);
+                if(stegan != ""){
                     if(model.encode(path,name,ext,stegan,text)){
-                            JOptionPane.showMessageDialog(null, "Proses Kompres pesan berhasil!", 
+                            JOptionPane.showMessageDialog(null, "Proses Sisip pesan berhasil! \n"
+                                    + "File di simpan pada " + path + "\\" + stegan + ".png", 
                                             "Success!", JOptionPane.INFORMATION_MESSAGE);
-                    }else{
-                        JOptionPane.showMessageDialog(null, "Gambar tidak dapat dikompres!", 
-                                            "Error!", JOptionPane.INFORMATION_MESSAGE);
                     }
-                    //display the new image
-                    lblImageKompres.setIcon(new ImageIcon(ImageIO.read(new File(path + "/" + stegan + ".png"))));
-                    txtGambar.setText("");
-                    txtTeks.setText("");
-                    txtKunci.setText("");
+                }else{
+                    JOptionPane.showMessageDialog(null, "Gambar tidak dapat dikompres!", 
+                                        "Error!", JOptionPane.INFORMATION_MESSAGE);
+                }
+                //display the new image
+                lblImageKompres.setIcon(new ImageIcon(ImageIO.read(new File(path + "/" + stegan + ".png"))));
+//                txtGambar.setText("");
+//                txtTeks.setText("");
+//                txtKunci.setText("");
             }catch(Exception except) {
-                    //Pesan Jika proses gagal
-                    JOptionPane.showMessageDialog(null, "File tidak dapat dibuka!", 
-                            "Error!", JOptionPane.INFORMATION_MESSAGE);
-                    }   
+                //Pesan Jika proses gagal
+                JOptionPane.showMessageDialog(null, "File tidak dapat dibuka!", 
+                        "Error!", JOptionPane.INFORMATION_MESSAGE);
+                }   
         }
     }//GEN-LAST:event_btnKompresActionPerformed
 

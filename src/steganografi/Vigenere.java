@@ -10,9 +10,14 @@ package steganografi;
  *
  * @author ivenacindy
  */
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+
 public class Vigenere {
+    String path;
     int[] aKey = null;
     int[] aPlain = null;
     int[] hasilEnkrip = null;
@@ -95,18 +100,33 @@ public class Vigenere {
         return enkrip;
     }
     
-    public String Dekrip (String plain, String key){
+    public String Dekrip (String plain, String key) throws IOException{
         String dekrip;
         System.out.println(plain);
         plainToAscii(plain);
         keyToAscii(key);
+        System.out.println("path ini "+ path);
+        FileWriter fw = new FileWriter(path);
+        BufferedWriter bw = new BufferedWriter(fw);
         char[] x = new char[aPlain.length];
+        System.out.println((aPlain[16]-aKey[16] )%256);
         for (int i = 0; i < aPlain.length; i++) {
 //            System.out.println(aPlain[i]);
-            x[i] = printChar((aPlain[i]-aKey[i] )%256); 
+            x[i] = printChar((aPlain[i]-aKey[i] )%256);
+            
+            if( ((aPlain[i]-aKey[i] )%256)!= 9 ){
+                bw.write(x[i]);
+            }else{
+                bw.newLine();
+            }
         }
+        bw.close();
         dekrip = String.valueOf(x);
 //        System.out.println(enkrip);
         return dekrip;
+    }
+    
+    public void setPath(String sPath){
+        path = sPath;
     }
 }
